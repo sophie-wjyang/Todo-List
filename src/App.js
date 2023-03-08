@@ -17,7 +17,7 @@ function App() {
 	const todoNameRef = useRef();
 
 
-	// ************************ SAVING EXISTING TODOS TO LOCAL STORAGE ************************ //
+	// ************************ SAVING EXISTING TODOS TO LOCAL STORAGE (so list remains when we reload the page) ************************ //
 
 	// load the todo list that we saved in local storage
 	useEffect(() => {
@@ -37,13 +37,13 @@ function App() {
 	// ************************ ADDING ABILITY TO CHECK AND UNCHECK TODOS ************************ //
 
 	function toggleTodo(id) {
-    // create a copy of the current todo list using the spread operator
+    	// create a copy of the current todo list using the spread operator
 		const newTodos = [...todos];
 
-    // find the todo that matches the id we're looking for
+    	// find the todo that matches the id we're looking for
 		const todo = newTodos.find((todo) => todo.id === id);
 
-    // toggle todo and set the modified list
+    	// toggle todo and set the modified list
 		todo.complete = !todo.complete;
 		setTodos(newTodos);
 	}
@@ -57,6 +57,7 @@ function App() {
 		}
 
 		// adds the new todo to the list of previous todos
+		// since setTodos is part of the useState hook, the previous state value is implicitly passed to it
 		setTodos((prevTodos) => {
 			return [...prevTodos, { id: uuidv4(), name: name, complete: false }];
 		});
@@ -66,6 +67,9 @@ function App() {
 	}
 
   function handleClearTodos(){
+	// find all incomplete todos
+	// set updated todo list to be those incomplete todos
+	// for each object todo in the todos array, if !todo.complete, add it to newTodos
     const newTodos = todos.filter(todo => !todo.complete)
     setTodos(newTodos)
   }
@@ -77,7 +81,9 @@ function App() {
 
       <div id="todo-list">
         <div id="todos-left">{todos.filter(todo => !todo.complete).length} tasks left to do:</div>
+
         <TodoList todos={todos} toggleTodo={toggleTodo} id="todo-items" />
+
         <input ref={todoNameRef} type="text" id="todo-input" placeholder="Add a new task"/>
         <i class="fa-solid fa-circle-plus" onClick={handleAddTodo} title="Add new to-do" id="add-todo-button"></i>
         <i class="fa-solid fa-trash-can" onClick={handleClearTodos} title="Clear completed to-dos" id="clear-todos-button"></i>
